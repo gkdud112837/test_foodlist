@@ -30,6 +30,14 @@ npm run dev
 
 수정 기능은 없다. 고치려면 Supabase Table Editor를 쓰거나 삭제 후 다시 추가한다.
 
+## Vercel 배포 (선택)
+
+배포본에는 개발 서버가 없으므로 `api/supabase.js` 함수가 프록시를 대신한다 (`vercel.json` 이 `/supabase/*` 를 이 함수로 보냄).
+
+1. Vercel 프로젝트의 Root Directory 를 이 폴더로, Preset 을 Vite 로 둔다
+2. Vercel → Settings → Environment Variables 에 `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, `ADMIN_PASSWORD` 를 Secret 으로 넣는다
+3. 배포 주소를 열면 비밀번호를 묻는다. `ADMIN_PASSWORD` 가 맞는 요청만 Supabase 로 전달되고, 테이블 API(`rest/v1`) 외 경로는 막는다
+
 ## 주의
 
 - secret 키는 RLS를 우회하는 관리자 키다. Supabase는 브라우저에서 secret 키를 쓰면 차단하므로, 브라우저는 `/supabase` 로 요청하고 개발 서버 프록시(`vite.config.js`)가 키를 붙여 전달한다. 키는 브라우저 코드에 들어가지 않는다
