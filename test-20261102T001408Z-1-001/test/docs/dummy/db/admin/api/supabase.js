@@ -1,7 +1,7 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 
 // Vercel 배포용 프록시. 로컬의 vite.config.js 프록시와 같은 역할 (브라우저 → /supabase → Supabase)
-// 배포 주소는 누구나 열 수 있으므로 ADMIN_PASSWORD 가 맞는 요청만 secret 키를 붙여 전달한다
+// 조회(GET, HEAD)는 누구나 가능. 추가·삭제는 배포 주소를 아는 누구나 할 수 없도록 ADMIN_PASSWORD 가 맞을 때만 전달한다
 const url = process.env.SUPABASE_URL;
 const key = process.env.SUPABASE_SECRET_KEY;
 const password = process.env.ADMIN_PASSWORD;
@@ -19,12 +19,14 @@ function passwordOk(given) {
 
 async function handle(request) {
   if (!url || !key || !password) {
+    // 비밀번호가 설정되지 않았으면 조회도 막는다 (실수로 설정을 빠뜨린 배포를 열어 두지 않기 위해)
     return Response.json(
       { message: 'Vercel 환경변수 SUPABASE_URL, SUPABASE_SECRET_KEY, ADMIN_PASSWORD 를 설정하세요' },
       { status: 500 },
     );
   }
-  if (!passwordOk(request.headers.get('x-admin-password'))) {
+  const isRead = ['GET', 'HEAD'].includes(request.method);
+  if (!isRead && !passwordOk(request.headers.get('x-admin-password'))) {
     return Response.json({ message: '비밀번호가 맞지 않습니다' }, { status: 401 });
   }
 
@@ -46,11 +48,10 @@ async function handle(request) {
   headers.set('authorization', `Bearer ${key}`);
   headers.set('user-agent', 'dummy-products-admin-proxy');
 
-  const hasBody = !['GET', 'HEAD'].includes(request.method);
   const upstream = await fetch(`${url.replace(/\/$/, '')}/${path}${incoming.search}`, {
     method: request.method,
     headers,
-    body: hasBody ? await request.arrayBuffer() : undefined,
+    body: isRead ? undefined : await request.arrayBuffer(),
   });
 
   const out = new Headers();

@@ -36,7 +36,7 @@ npm run dev
 
 1. Vercel 프로젝트의 Root Directory 를 이 폴더로, Preset 을 Vite 로 둔다
 2. Vercel → Settings → Environment Variables 에 `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, `ADMIN_PASSWORD` 를 Secret 으로 넣는다
-3. 배포 주소를 열면 비밀번호를 묻는다. `ADMIN_PASSWORD` 가 맞는 요청만 Supabase 로 전달되고, 테이블 API(`rest/v1`) 외 경로는 막는다
+3. 조회는 비밀번호 없이 된다. 추가 · 삭제할 때 비밀번호를 묻고, `ADMIN_PASSWORD` 가 맞아야 Supabase 로 전달된다. 테이블 API(`rest/v1`) 외 경로는 막는다
 
 ## 주의
 
