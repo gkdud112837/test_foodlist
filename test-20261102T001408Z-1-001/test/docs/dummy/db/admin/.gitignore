@@ -1,0 +1,6 @@
+node_modules/
+dist/
+# 키가 들어가는 환경 파일 (.env.example 은 올림)
+.env
+.env.local
+.env.*.local

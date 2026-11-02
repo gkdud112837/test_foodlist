@@ -1,0 +1,12 @@
+# 키가 들어가는 환경 파일 (모든 폴더). .env.example 은 올림
+.env
+.env.*
+!.env.example
+
+# 의존성 / 빌드 결과
+node_modules/
+dist/
+
+# OS 파일
+.DS_Store
+Thumbs.db
